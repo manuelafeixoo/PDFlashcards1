@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FunLessons – Flashcards 1 (Corrected)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<style>
+/* --- ESTILOS VISUALES --- */
+:root {
+    --primary: #ff7043;
+    --secondary: #ffca28;
+    --accent: #26a69a;
+    --bg-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    padding: 15px;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.app {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(255, 112, 67, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: var(--primary);
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0; }
+
+.controls-top {
+    padding: 15px;
+    background: #fff;
+    border-bottom: 2px solid #eee;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+select {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 2px solid var(--accent);
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--accent);
+    outline: none;
+    cursor: pointer;
+    background: #e0f2f1;
+}
+
+/* --- ESCENARIO DE LA FLASHCARD --- */
+.scene {
+    width: 100%;
+    height: 350px;
+    perspective: 1000px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 280px;
+    height: 320px;
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+}
+
+.card.is-flipped { transform: rotateY(180deg); }
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border: 4px solid #fff;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.card-face.front { background: #fff; border-color: var(--secondary); }
+.card-face.back { background: var(--accent); color: white; transform: rotateY(180deg); border-color: var(--accent); }
+
+/* Ajuste para que el contenedor de imagen/emoji sea flexible */
+.emoji-img { 
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem; 
+    line-height: 1; 
+}
+
+/* Estilo para las imágenes reales */
+.emoji-img img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
+}
+
+.word-text { font-size: 2.5rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
+.tap-hint { font-size: 0.9rem; color: #aaa; margin-top: 10px; opacity: 0.7; }
+.tap-hint.white { color: rgba(255,255,255,0.8); }
+
+/* --- NAVEGACIÓN --- */
+.nav-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: #f9f9f9;
+}
+
+.nav-btn {
+    background: white;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.nav-btn:disabled { border-color: #ccc; color: #ccc; }
+.counter { font-size: 1.1rem; font-weight: bold; color: #777; background: #eee; padding: 5px 15px; border-radius: 15px; }
+
+.sound-btn-small {
+    background: rgba(255,255,255,0.2);
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 50%;
+    width: 45px; height: 45px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+    <header><div class="logo">⚡ Flashcards 1 <span>🇬🇧</span></div></header>
+
+    <div class="controls-top">
+        <label style="font-weight:bold; color:#666;">Topic:</label>
+        <select id="categorySelect" onchange="changeCategory()">
+            <option value="ALL">🌟 Mix (All)</option>
+            <option value="COLORS">🎨 Colors</option>
+            <option value="NUMBERS">🔢 Numbers</option>
+            <option value="FAMILY">👨‍👩‍👧 Family</option>
+            <option value="FEELINGS">❤️ Feelings</option>
+            <option value="SCHOOL">🎒 School</option>
+            <option value="ANIMALS">🐶 Animals</option>
+            <option value="TOYS">⚽ Toys</option>
+            <option value="BODY">💪 Body</option>
+            <option value="FOOD">🍎 Food</option>
+        </select>
+    </div>
+
+    <div class="scene">
+        <div class="card" id="flashcard" onclick="flipCard()">
+            <div class="card-face front">
+                <div class="emoji-img" id="cardImg">❓</div>
+                <div class="tap-hint">👆 Tap to flip</div>
+            </div>
+            <div class="card-face back">
+                <div class="word-text" id="cardWord">WORD</div>
+                <button class="sound-btn-small" onclick="event.stopPropagation(); playCurrentAudio()">🔊</button>
+                <div class="tap-hint white">👆 Tap to flip back</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn" onclick="prevCard()">⬅️</button>
+        <div class="counter" id="counterDisplay">1 / 10</div>
+        <button class="nav-btn" id="nextBtn" onclick="nextCard()">➡️</button>
+    </div>
+</div>
+
+<script>
+const vocab = [
+ {en:"APPLE", es:"MANZANA", img:"🍎", cat:"FOOD"},
+ {en:"BANANA", es:"PLÁTANO", img:"🍌", cat:"FOOD"},
+ {en:"CAKE", es:"PASTEL", img:"🍰", cat:"FOOD"},
+ {en:"CHEESE", es:"QUESO", img:"🧀", cat:"FOOD"},
+ {en:"CHICKEN", es:"POLLO", img:"🍗", cat:"FOOD"},
+ {en:"JUICE", es:"ZUMO", img:"🧃", cat:"FOOD"},
+ {en:"MEAT", es:"CARNE", img:"🥩", cat:"FOOD"},
+ {en:"MILK", es:"LECHE", img:"🥛", cat:"FOOD"},
+ {en:"ORANGE", es:"NARANJA", img:"🍊", cat:"FOOD"},
+ {en:"PEAR", es:"PERA", img:"🍐", cat:"FOOD"},
+ {en:"SALAD", es:"ENSALADA", img:"🥗", cat:"FOOD"},
+ {en:"SOUP", es:"SOPA", img:"🍲", cat:"FOOD"},
+ {en:"WATER", es:"AGUA", img:"💧", cat:"FOOD"},
+ {en:"YOGURT", img:"yogurt.png", isImage: true, cat:"FOOD"},
+ {en:"ARM", es:"BRAZO", img:"💪", cat:"BODY"},
+ {en:"HAIR", es:"PELO", img:"💇", cat:"BODY"},
+ {en:"HAND", es:"MANO", img:"🖐️", cat:"BODY"},
+ {en:"HEAD", es:"CABEZA", img:"👤", cat:"BODY"},
+ {en:"KNEE", es:"RODILLA", img:"🦵", cat:"BODY"},
+ {en:"LEG", es:"PIERNA", img:"🦵", cat:"BODY"},
+ {en:"MOUTH", es:"BOCA", img:"👄", cat:"BODY"},
+ {en:"NOSE", es:"NARIZ", img:"👃", cat:"BODY"},
+ {en:"TOES", es:"DEDOS DEL PIE", img:"🦶", cat:"BODY"},
+ {en:"BABY", es:"BEBÉ", img:"👶", cat:"FAMILY"},
+ {en:"BROTHER", es:"HERMANO", img:"👦", cat:"FAMILY"},
+ {en:"DAD", es:"PAPÁ", img:"👨", cat:"FAMILY"},
+ {en:"MUM", es:"MAMÁ", img:"👩", cat:"FAMILY"},
+ {en:"SISTER", es:"HERMANA", img:"👧", cat:"FAMILY"},
+ {en:"GRANNY", es:"ABUELA", img:"👵", cat:"FAMILY"},
+ {en:"GRANDAD", es:"ABUELO", img:"👴", cat:"FAMILY"},
+ {en:"BIN", es:"PAPELERA", img:"🗑️", cat:"SCHOOL"},
+ {en:"BOOK", es:"LIBRO", img:"📖", cat:"SCHOOL"},
+ {en:"CHAIR", es:"SILLA", img:"🪑", cat:"SCHOOL"},
+ {en:"CRAYON", es:"CERA", img:"🖍️", cat:"SCHOOL"},
+ {en:"GLUE", img:"glue.png", isImage: true, cat:"SCHOOL"},
+ {en:"PEN", es:"BOLÍGRAFO", img:"🖊️", cat:"SCHOOL"},
+ {en:"PENCIL", es:"LÁPIZ", img:"✏️", cat:"SCHOOL"},
+ {en:"PENCIL CASE", img:"pencil case.png", isImage: true, cat:"SCHOOL"},
+ {en:"RUBBER", img:"rubber.png", isImage: true, cat:"SCHOOL"},
+ {en:"RULER", es:"REGLA", img:"📏", cat:"SCHOOL"},
+ {en:"SCHOOL BAG", es:"MOCHILA", img:"🎒", cat:"SCHOOL"},
+ {en:"SHARPENER", img:"sharpener.png", isImage: true, cat:"SCHOOL"},
+ {en:"CAT", es:"GATO", img:"🐱", cat:"ANIMALS"},
+ {en:"DOG", es:"PERRO", img:"🐶", cat:"ANIMALS"},
+ {en:"MOUSE", es:"RATÓN", img:"🐭", cat:"ANIMALS"},
+ {en:"PARROT", es:"LORO", img:"🦜", cat:"ANIMALS"},
+ {en:"RABBIT", es:"CONEJO", img:"🐰", cat:"ANIMALS"},
+ {en:"SNAKE", es:"SERPIENTE", img:"🐍", cat:"ANIMALS"},
+ {en:"SPIDER", es:"ARAÑA", img:"🕷️", cat:"ANIMALS"},
+ {en:"FISH", es:"PEZ", img:"🐠", cat:"ANIMALS"},
+ {en:"MONKEY", es:"MONO", img:"🐒", cat:"ANIMALS"},
+ {en:"HORSE", es:"CABALLO", img:"🐎", cat:"ANIMALS"},
+ {en:"BALL", es:"PELOTA", img:"⚽", cat:"TOYS"},
+ {en:"CAR", es:"COCHE", img:"🚗", cat:"TOYS"},
+ {en:"DOLL", es:"MUÑECA", img:"🪆", cat:"TOYS"},
+ {en:"PLANE", es:"AVIÓN", img:"✈️", cat:"TOYS"},
+ {en:"ROBOT", es:"ROBOT", img:"🤖", cat:"TOYS"},
+ {en:"SCOOTER", es:"PATINETE", img:"🛴", cat:"TOYS"},
+ {en:"TEDDY", es:"OSO DE PELUCHE", img:"🧸", cat:"TOYS"},
+ {en:"GAME CONSOLE", es:"CONSOLA", img:"🎮", cat:"TOYS"},
+ {en:"TRAIN", es:"TREN", img:"🚂", cat:"TOYS"},
+ {en:"DINOSAUR", es:"DINOSAURIO", img:"🦖", cat:"TOYS"},
+ {en:"KITE", es:"COMETA", img:"🪁", cat:"TOYS"},
+ {en:"BIG", img:"big.png", isImage: true, cat:"TOYS"},
+ {en:"SMALL", img:"small.png", isImage: true, cat:"TOYS"},
+ {en:"BORED", es:"ABURRIDO", img:"😪", cat:"FEELINGS"},
+ {en:"HAPPY", es:"FELIZ", img:"😊", cat:"FEELINGS"},
+ {en:"HUNGRY", es:"HAMBRIENTO", img:"🤤", cat:"FEELINGS"},
+ {en:"SAD", es:"TRISTE", img:"😢", cat:"FEELINGS"},
+ {en:"SCARED", es:"ASUSTADO", img:"😨", cat:"FEELINGS"},
+ {en:"BLUE", es:"AZUL", img:"🔵", cat:"COLORS"},
+ {en:"PINK", es:"ROSA", img:"🌸", cat:"COLORS"},
+ {en:"PURPLE", es:"MORADO", img:"💜", cat:"COLORS"},
+ {en:"YELLOW", es:"AMARILLO", img:"💛", cat:"COLORS"},
+ {en:"RED", es:"ROJO", img:"🔴", cat:"COLORS"},
+ {en:"GREEN", es:"VERDE", img:"🟢", cat:"COLORS"},
+ {en:"BLACK", es:"NEGRO", img:"⚫", cat:"COLORS"},
+ {en:"WHITE", es:"BLANCO", img:"⚪", cat:"COLORS"},
+ {en:"BROWN", es:"MARRÓN", img:"🟤", cat:"COLORS"},
+ {en:"GREY", es:"GRIS", img:"🩶", cat:"COLORS"},
+ {en:"ORANGE", es:"NARANJA", img:"🟠", cat:"COLORS"},
+ {en:"ONE", es:"UNO", img:"1️⃣", cat:"NUMBERS"},
+ {en:"TWO", es:"DOS", img:"2️⃣", cat:"NUMBERS"},
+ {en:"THREE", es:"TRES", img:"3️⃣", cat:"NUMBERS"},
+ {en:"FOUR", es:"CUATRO", img:"4️⃣", cat:"NUMBERS"},
+ {en:"FIVE", es:"CINCO", img:"5️⃣", cat:"NUMBERS"},
+ {en:"SIX", es:"SEIS", img:"6️⃣", cat:"NUMBERS"},
+ {en:"SEVEN", es:"SIETE", img:"7️⃣", cat:"NUMBERS"},
+ {en:"EIGHT", es:"OCHO", img:"8️⃣", cat:"NUMBERS"},
+ {en:"NINE", es:"NUEVE", img:"9️⃣", cat:"NUMBERS"},
+ {en:"TEN", es:"DIEZ", img:"🔟", cat:"NUMBERS"},
+];
+
+let currentList = [], currentIndex = 0, isFlipped = false;
+const ui = {
+    card: document.getElementById("flashcard"),
+    img: document.getElementById("cardImg"),
+    word: document.getElementById("cardWord"),
+    counter: document.getElementById("counterDisplay"),
+    prevBtn: document.getElementById("prevBtn"),
+    nextBtn: document.getElementById("nextBtn")
+};
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function changeCategory() {
+    const cat = document.getElementById("categorySelect").value;
+    let tempList = (cat === "ALL") ? [...vocab] : vocab.filter(item => item.cat === cat);
+    currentList = shuffleArray(tempList);
+    currentIndex = 0;
+    resetCardFace();
+    updateUI();
+}
+
+function updateUI() {
+    if(currentList.length === 0) return;
+    const item = currentList[currentIndex];
+
+    // CORRECCIÓN: Renderizar imagen o texto
+    if (item.isImage) {
+        ui.img.innerHTML = `<img src="${item.img}" alt="${item.en}">`;
+    } else {
+        ui.img.innerHTML = item.img;
+    }
+
+    ui.word.textContent = item.en;
+    ui.counter.textContent = `${currentIndex + 1} / ${currentList.length}`;
+    ui.prevBtn.disabled = (currentIndex === 0);
+    ui.nextBtn.disabled = (currentIndex === currentList.length - 1);
+}
+
+function flipCard() {
+    isFlipped = !isFlipped;
+    ui.card.classList.toggle("is-flipped", isFlipped);
+    if(isFlipped) setTimeout(playCurrentAudio, 200);
+}
+
+function resetCardFace() { isFlipped = false; ui.card.classList.remove("is-flipped"); }
+function nextCard() { if(currentIndex < currentList.length - 1) { currentIndex++; resetCardFace(); setTimeout(updateUI, 150); } }
+function prevCard() { if(currentIndex > 0) { currentIndex--; resetCardFace(); setTimeout(updateUI, 150); } }
+
+function playCurrentAudio() {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(currentList[currentIndex].en);
+    utterance.lang = "en-GB"; utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+}
+
+changeCategory();
+</script>
+</body>
+</html>
