@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
-/* --- ESTILOS VISUALES --- */
+/* --- ESTILOS VISUALES ORIGINALES --- */
 :root {
     --primary: #ff7043;
     --secondary: #ffca28;
@@ -51,10 +51,32 @@ header {
     background: #fff;
     border-bottom: 2px solid #eee;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     gap: 10px;
     align-items: center;
 }
+
+/* Panel de selección múltiple */
+#multiSelectContainer {
+    display: none;
+    background: #f0f2f1;
+    padding: 15px;
+    border-radius: 15px;
+    margin: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    border: 2px solid var(--accent);
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: #444;
+}
+
 select {
     padding: 10px 20px;
     border-radius: 25px;
@@ -106,9 +128,9 @@ select {
 }
 
 .card-face.front { background: #fff; border-color: var(--secondary); }
-.card-face.back { background: var(--accent); color: white; transform: rotateY(180deg); border-color: var(--accent); }
+.card-face.back { background: var(--accent); color: white;
+    transform: rotateY(180deg); border-color: var(--accent); }
 
-/* Ajuste para que el contenedor de imagen/emoji sea flexible */
 .emoji-img { 
     width: 100%;
     height: 200px;
@@ -116,10 +138,9 @@ select {
     align-items: center;
     justify-content: center;
     font-size: 8rem; 
-    line-height: 1; 
+    line-height: 1;
 }
 
-/* Estilo para las imágenes reales */
 .emoji-img img {
     max-width: 90%;
     max-height: 90%;
@@ -131,7 +152,6 @@ select {
 .tap-hint { font-size: 0.9rem; color: #aaa; margin-top: 10px; opacity: 0.7; }
 .tap-hint.white { color: rgba(255,255,255,0.8); }
 
-/* --- NAVEGACIÓN --- */
 .nav-controls {
     display: flex;
     justify-content: space-between;
@@ -171,19 +191,35 @@ select {
     <header><div class="logo">⚡ Flashcards 1 <span>🇬🇧</span></div></header>
 
     <div class="controls-top">
-        <label style="font-weight:bold; color:#666;">Topic:</label>
-        <select id="categorySelect" onchange="changeCategory()">
-            <option value="ALL">🌟 Mix (All)</option>
-            <option value="COLOURS">🎨 Colours</option>
-            <option value="NUMBERS">🔢 Numbers</option>
-            <option value="FAMILY">👨‍👩‍👧 Family</option>
-            <option value="FEELINGS">❤️ Feelings</option>
-            <option value="SCHOOL">🎒 School</option>
-            <option value="ANIMALS">🐶 Animals</option>
-            <option value="TOYS">⚽ Toys</option>
-            <option value="BODY">💪 Body</option>
-            <option value="FOOD">🍎 Food</option>
-        </select>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label style="font-weight:bold; color:#666;">Topic:</label>
+            <select id="categorySelect" onchange="toggleMultiSelect()">
+                <option value="ALL">🌟 All Topics</option>
+                <option value="MIX_TOPICS">🌪️ Mix Topics</option>
+                <option value="COLOURS">🎨 Colours</option>
+                <option value="NUMBERS">🔢 Numbers</option>
+                <option value="FAMILY">👨‍👩‍👧 Family</option>
+                <option value="FEELINGS">❤️ Feelings</option>
+                <option value="SCHOOL">🎒 School</option>
+                <option value="ANIMALS">🐶 Animals</option>
+                <option value="TOYS">⚽ Toys</option>
+                <option value="BODY">💪 Body</option>
+                <option value="FOOD">🍎 Food</option>
+            </select>
+        </div>
+
+        <div id="multiSelectContainer">
+            <label class="check-item"><input type="checkbox" value="COLOURS">🎨 Colours</label>
+            <label class="check-item"><input type="checkbox" value="NUMBERS">🔢 Numbers</label>
+            <label class="check-item"><input type="checkbox" value="FAMILY">👨‍👩‍👧 Family</label>
+            <label class="check-item"><input type="checkbox" value="FEELINGS">❤️ Feelings</label>
+            <label class="check-item"><input type="checkbox" value="SCHOOL">🎒 School</label>
+            <label class="check-item"><input type="checkbox" value="ANIMALS">🐶 Animals</label>
+            <label class="check-item"><input type="checkbox" value="TOYS">⚽ Toys</label>
+            <label class="check-item"><input type="checkbox" value="BODY">💪 Body</label>
+            <label class="check-item"><input type="checkbox" value="FOOD">🍎 Food</label>
+            <button onclick="applyAndClose()" style="grid-column: span 2; background: var(--accent); color: white; border: none; padding: 10px; border-radius: 15px; font-weight: bold; cursor: pointer;">Apply Mix</button>
+        </div>
     </div>
 
     <div class="scene">
@@ -311,7 +347,8 @@ const ui = {
     word: document.getElementById("cardWord"),
     counter: document.getElementById("counterDisplay"),
     prevBtn: document.getElementById("prevBtn"),
-    nextBtn: document.getElementById("nextBtn")
+    nextBtn: document.getElementById("nextBtn"),
+    multiPanel: document.getElementById("multiSelectContainer")
 };
 
 function shuffleArray(array) {
@@ -322,9 +359,35 @@ function shuffleArray(array) {
     return array;
 }
 
+function toggleMultiSelect() {
+    const cat = document.getElementById("categorySelect").value;
+    ui.multiPanel.style.display = (cat === "MIX_TOPICS") ? "grid" : "none";
+    if (cat !== "MIX_TOPICS") changeCategory();
+}
+
+function applyAndClose() {
+    changeCategory();
+    ui.multiPanel.style.display = "none";
+}
+
 function changeCategory() {
     const cat = document.getElementById("categorySelect").value;
-    let tempList = (cat === "ALL") ? [...vocab] : vocab.filter(item => item.cat === cat);
+    let tempList = [];
+
+    if (cat === "ALL") {
+        tempList = [...vocab];
+    } else if (cat === "MIX_TOPICS") {
+        const checkedValues = Array.from(ui.multiPanel.querySelectorAll('input:checked')).map(cb => cb.value);
+        tempList = vocab.filter(item => checkedValues.includes(item.cat));
+    } else {
+        tempList = vocab.filter(item => item.cat === cat);
+    }
+
+    if (tempList.length === 0) {
+        alert("Please select at least one topic!");
+        return;
+    }
+    
     currentList = shuffleArray(tempList);
     currentIndex = 0;
     resetCardFace();
@@ -334,8 +397,6 @@ function changeCategory() {
 function updateUI() {
     if(currentList.length === 0) return;
     const item = currentList[currentIndex];
-
-    // CORRECCIÓN: Renderizar imagen o texto
     if (item.isImage) {
         ui.img.innerHTML = `<img src="${item.img}" alt="${item.en}">`;
     } else {
@@ -354,14 +415,32 @@ function flipCard() {
     if(isFlipped) setTimeout(playCurrentAudio, 200);
 }
 
-function resetCardFace() { isFlipped = false; ui.card.classList.remove("is-flipped"); }
-function nextCard() { if(currentIndex < currentList.length - 1) { currentIndex++; resetCardFace(); setTimeout(updateUI, 150); } }
-function prevCard() { if(currentIndex > 0) { currentIndex--; resetCardFace(); setTimeout(updateUI, 150); } }
+function resetCardFace() { 
+    isFlipped = false;
+    ui.card.classList.remove("is-flipped"); 
+}
+
+function nextCard() { 
+    if(currentIndex < currentList.length - 1) { 
+        currentIndex++; 
+        resetCardFace(); 
+        setTimeout(updateUI, 150);
+    } 
+}
+
+function prevCard() { 
+    if(currentIndex > 0) { 
+        currentIndex--; 
+        resetCardFace(); 
+        setTimeout(updateUI, 150); 
+    } 
+}
 
 function playCurrentAudio() {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(currentList[currentIndex].en);
-    utterance.lang = "en-GB"; utterance.rate = 0.9;
+    utterance.lang = "en-GB"; 
+    utterance.rate = 0.9;
     window.speechSynthesis.speak(utterance);
 }
 
