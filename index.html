@@ -2,411 +2,367 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FunLessons – Flashcards 1 (Corrected)</title>
+<title>Flashcards Year 1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
-/* --- ESTILOS VISUALES ORIGINALES --- */
 :root {
-    --primary: #ff7043;
-    --secondary: #ffca28;
-    --accent: #26a69a;
-    --bg-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    --primary: #6200ea;
+    --secondary: #00e5ff; 
+    --header-bg: #efdaf7;
+    --bg-gradient: linear-gradient(135deg, #fff9c4 0%, #f8bbd0 100%);
+    --color-img-mode: #ff9800;
+    --color-word-mode: #2196f3;
+    --color-exam-mode: #90ee90;
+    --color-success: #00c853; 
+    --color-error: #ff1744;
 }
 
 body {
     margin: 0;
     font-family: "Segoe UI", Tahoma, sans-serif;
-    background: var(--bg-gradient);
-    min-height: 100vh;
-    padding: 15px;
-    user-select: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background: var(--bg-gradient); min-height: 100vh;
+    padding: 10px; display: flex; flex-direction: column; align-items: center;
 }
 
 .app {
-    width: 100%;
-    max-width: 600px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(255, 112, 67, 0.3);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    width: 100%; max-width: 500px;
+    background: rgba(255, 255, 255, 0.98); border-radius: 40px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15); overflow: hidden;
+    display: flex; flex-direction: column;
 }
 
-header {
-    background: var(--primary);
-    color: #fff;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-.logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0; }
-
-.controls-top {
-    padding: 15px;
-    background: #fff;
-    border-bottom: 2px solid #eee;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
+header { 
+    background: var(--header-bg); 
+    color: #333; padding: 12px; 
+    text-align: center; display: flex; justify-content: center; 
+    align-items: center; gap: 8px; font-weight: 900; 
+    font-size: 1.5rem;
+    white-space: nowrap;
 }
 
-/* Panel de selección múltiple */
-#multiSelectContainer {
-    display: none;
-    background: #f0f2f1;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 10px;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    border: 2px solid var(--accent);
+/* Modificación: Iconos del Header circulares y blancos */
+header img { 
+    width: 30px; 
+    height: 30px; 
+    background: white; 
+    border-radius: 50%; 
+    object-fit: contain;
+    padding: 2px;
 }
 
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    color: #444;
+.exam-bar { 
+    background: #424242; color: white; padding: 10px 20px; 
+    display: none; justify-content: space-between; align-items: center;
 }
 
-select {
-    padding: 10px 20px;
-    border-radius: 25px;
-    border: 2px solid var(--accent);
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--accent);
-    outline: none;
-    cursor: pointer;
-    background: #e0f2f1;
+.progress-container { width: 100%; height: 8px; background: #f5f5f5; }
+.progress-bar { width: 0%; height: 100%; background: var(--secondary); transition: width 0.4s; }
+
+.mode-selector { display: flex; padding: 10px; gap: 8px; background: #fff; border-bottom: 1px solid #eee; }
+.mode-btn { 
+    flex: 1; padding: 10px; border: 2px solid #eee; border-radius: 15px; 
+    background: #fafafa; color: #757575; font-weight: 800; cursor: pointer; 
+    display: flex; align-items: center; justify-content: center; gap: 5px; 
+    transition: all 0.3s; font-size: 0.75rem;
 }
 
-/* --- ESCENARIO DE LA FLASHCARD --- */
-.scene {
-    width: 100%;
-    height: 350px;
-    perspective: 1000px;
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Modificación: Iconos de los botones de modo circulares y blancos */
+.mode-btn img { 
+    width: 22px; 
+    height: 22px; 
+    object-fit: contain; 
+    background: white; 
+    border-radius: 50%; 
+    padding: 2px;
 }
 
-.card {
-    width: 280px;
-    height: 320px;
-    position: relative;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-    cursor: pointer;
+.mode-btn.active.img-en { background: var(--color-img-mode); color: white; border-color: #f57c00; }
+.mode-btn.active.en-img { background: var(--color-word-mode); color: white; border-color: #1976d2; }
+.mode-btn.exam.active { background: var(--color-exam-mode); color: #2e7d32; border-color: #81c784; }
+
+.controls-top { padding: 15px; text-align: center; }
+select { 
+    padding: 10px; border-radius: 20px; border: 2px solid var(--primary); 
+    font-weight: 800; width: 95%; cursor: pointer; color: var(--primary); background: #f3e5f5;
 }
 
+.mix-panel { 
+    display: none; background: #fffde7; padding: 15px;
+    margin: 0 15px 15px 15px; border-radius: 20px; text-align: left; 
+    max-height: 180px; overflow-y: auto; font-size: 0.85rem; border: 2px dashed #fdd835;
+}
+
+.scene { width: 100%; height: 350px; perspective: 1000px; display: flex; justify-content: center; align-items: center; }
+.card { width: 290px; height: 280px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
 .card.is-flipped { transform: rotateY(180deg); }
 
-.card-face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    border: 4px solid #fff;
-    padding: 10px;
-    box-sizing: border-box;
+.card-face { 
+    position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+    border-radius: 35px; display: flex; flex-direction: column; align-items: center; 
+    justify-content: center; padding: 25px; box-sizing: border-box; border: 8px solid #fff;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
 }
+.face-img { background: #ffffff; } 
+.face-word { background: var(--primary); color: white; }
+.card-face.back { transform: rotateY(180deg); }
 
-.card-face.front { background: #fff; border-color: var(--secondary); }
-.card-face.back { background: var(--accent); color: white;
-    transform: rotateY(180deg); border-color: var(--accent); }
+.main-img { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 8rem; }
+.main-img img { max-width: 95%; max-height: 95%; object-fit: contain; background: transparent; mix-blend-mode: multiply; }
 
-.emoji-img { 
-    width: 100%;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8rem; 
-    line-height: 1;
-}
+.exam-actions { display: none; gap: 20px; margin-top: 20px; }
+.action-btn { border: none; border-radius: 50%; width: 65px; height: 65px; color: white; font-size: 2rem; cursor: pointer; }
 
-.emoji-img img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
-}
-
-.word-text { font-size: 2.5rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
-.tap-hint { font-size: 0.9rem; color: #aaa; margin-top: 10px; opacity: 0.7; }
-.tap-hint.white { color: rgba(255,255,255,0.8); }
-
-.nav-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 30px;
-    background: #f9f9f9;
-}
-
-.nav-btn {
-    background: white;
-    border: 2px solid var(--primary);
-    color: var(--primary);
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-}
-
-.nav-btn:disabled { border-color: #ccc; color: #ccc; }
-.counter { font-size: 1.1rem; font-weight: bold; color: #777; background: #eee; padding: 5px 15px; border-radius: 15px; }
-
-.sound-btn-small {
-    background: rgba(255,255,255,0.2);
-    border: 2px solid #fff;
-    color: #fff;
-    border-radius: 50%;
-    width: 45px; height: 45px;
-    cursor: pointer;
-    font-size: 1.2rem;
-}
+.nav-controls { display: flex; justify-content: space-between; align-items: center; padding: 15px 35px; background: #fff; border-top: 1px solid #eee; }
+.nav-btn { background: var(--primary); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; }
+.counter { font-weight: 800; color: var(--primary); font-size: 1rem; }
 </style>
 </head>
 <body>
 
 <div class="app">
-    <header><div class="logo">⚡ Flashcards 1 <span>🇬🇧</span></div></header>
+    <div class="exam-bar" id="examBar">
+        <span>⏱️ <span id="timer">00:00</span></span>
+        <span>🔥 <span id="streak">0</span></span>
+        <span>✅ <span id="scoreCorrect">0</span> | ❌ <span id="scoreWrong">0</span></span>
+    </div>
+    <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+
+    <header>
+        <img src="english.png"> PICTURE DICTIONARY 1 <img src="english.png">
+    </header>
+
+    <div class="mode-selector">
+        <button id="btnImgEn" class="mode-btn active img-en" onclick="setMode('IMG-EN')">
+            <img src="camera.png"> ➔ <img src="english.png">
+        </button>
+        <button id="btnEnImg" class="mode-btn en-img" onclick="setMode('EN-IMG')">
+            <img src="english.png"> ➔ <img src="camera.png">
+        </button>
+        <button id="btnExam" class="mode-btn exam" onclick="toggleExamMode()">🎓 EXAM</button>
+    </div>
 
     <div class="controls-top">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <label style="font-weight:bold; color:#666;">Topic:</label>
-            <select id="categorySelect" onchange="toggleMultiSelect()">
-                <option value="ALL">🌟 All Topics</option>
-                <option value="MIX_TOPICS">🌪️ Mix Topics</option>
-                <option value="COLOURS">🎨 Colours</option>
-                <option value="NUMBERS">🔢 Numbers</option>
-                <option value="FAMILY">👨‍👩‍👧 Family</option>
-                <option value="FEELINGS">❤️ Feelings</option>
-                <option value="SCHOOL">🎒 School</option>
-                <option value="ANIMALS">🐶 Animals</option>
-                <option value="TOYS">⚽ Toys</option>
-                <option value="BODY">💪 Body</option>
-                <option value="FOOD">🍎 Food</option>
-            </select>
-        </div>
+        <select id="categorySelect" onchange="handleCategoryChange()">
+            <option value="ALL">🌟 All Topics</option>
+            <option value="MIXED">🧩 Mixed Topics</option>
+        </select>
+    </div>
 
-        <div id="multiSelectContainer">
-            <label class="check-item"><input type="checkbox" value="COLOURS">🎨 Colours</label>
-            <label class="check-item"><input type="checkbox" value="NUMBERS">🔢 Numbers</label>
-            <label class="check-item"><input type="checkbox" value="FAMILY">👨‍👩‍👧 Family</label>
-            <label class="check-item"><input type="checkbox" value="FEELINGS">❤️ Feelings</label>
-            <label class="check-item"><input type="checkbox" value="SCHOOL">🎒 School</label>
-            <label class="check-item"><input type="checkbox" value="ANIMALS">🐶 Animals</label>
-            <label class="check-item"><input type="checkbox" value="TOYS">⚽ Toys</label>
-            <label class="check-item"><input type="checkbox" value="BODY">💪 Body</label>
-            <label class="check-item"><input type="checkbox" value="FOOD">🍎 Food</label>
-            <button onclick="applyAndClose()" style="grid-column: span 2; background: var(--accent); color: white; border: none; padding: 10px; border-radius: 15px; font-weight: bold; cursor: pointer;">Apply Mix</button>
-        </div>
+    <div id="mixPanel" class="mix-panel">
+        <strong>Pick topics to mix:</strong><hr>
+        <div id="mixCheckboxes"></div>
+        <button style="width:100%; margin-top:10px; background:var(--primary); color:white; border:none; padding:8px; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="changeCategory()">Start Learning!</button>
     </div>
 
     <div class="scene">
         <div class="card" id="flashcard" onclick="flipCard()">
-            <div class="card-face front">
-                <div class="emoji-img" id="cardImg">❓</div>
-                <div class="tap-hint">👆 Tap to flip</div>
+            <div class="card-face front" id="faceFront">
+                <div class="main-img" id="imgFront"></div>
+                <div class="main-text" style="font-size:2.3rem; font-weight:900;" id="textFront"></div>
             </div>
-            <div class="card-face back">
-                <div class="word-text" id="cardWord">WORD</div>
-                <button class="sound-btn-small" onclick="event.stopPropagation(); playCurrentAudio()">🔊</button>
-                <div class="tap-hint white">👆 Tap to flip back</div>
+            <div class="card-face back" id="faceBack">
+                <div class="main-img" id="imgBack"></div>
+                <div class="main-text" style="font-size:2.3rem; font-weight:900;" id="textBack"></div>
+                <div id="examActions" class="exam-actions">
+                    <button class="action-btn btn-no" onclick="event.stopPropagation(); markResult(false)">❌</button>
+                    <button class="action-btn btn-yes" onclick="event.stopPropagation(); markResult(true)">✅</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="nav-controls">
         <button class="nav-btn" id="prevBtn" onclick="prevCard()">⬅️</button>
-        <div class="counter" id="counterDisplay">1 / 10</div>
+        <div class="counter" id="counterDisplay">0 / 0</div>
         <button class="nav-btn" id="nextBtn" onclick="nextCard()">➡️</button>
     </div>
 </div>
 
 <script>
+/* Vocabulario y Lógica se mantienen igual */
 const vocab = [
- {en:"APPLE", es:"MANZANA", img:"🍎", cat:"FOOD"},
- {en:"BANANA", es:"PLÁTANO", img:"🍌", cat:"FOOD"},
- {en:"CAKE", es:"PASTEL", img:"🍰", cat:"FOOD"},
- {en:"CHEESE", es:"QUESO", img:"🧀", cat:"FOOD"},
- {en:"CHICKEN", es:"POLLO", img:"🍗", cat:"FOOD"},
- {en:"JUICE", es:"ZUMO", img:"🧃", cat:"FOOD"},
- {en:"MEAT", es:"CARNE", img:"🥩", cat:"FOOD"},
- {en:"MILK", es:"LECHE", img:"🥛", cat:"FOOD"},
- {en:"ORANGE", es:"NARANJA", img:"🍊", cat:"FOOD"},
- {en:"PEAR", es:"PERA", img:"🍐", cat:"FOOD"},
- {en:"SALAD", es:"ENSALADA", img:"🥗", cat:"FOOD"},
- {en:"SOUP", es:"SOPA", img:"🍲", cat:"FOOD"},
- {en:"WATER", es:"AGUA", img:"💧", cat:"FOOD"},
- {en:"YOGURT", img:"yogurt.png", isImage: true, cat:"FOOD"},
- {en:"ARM", es:"BRAZO", img:"💪", cat:"BODY"},
- {en:"HAIR", es:"PELO", img:"💇", cat:"BODY"},
- {en:"HAND", es:"MANO", img:"🖐️", cat:"BODY"},
- {en:"HEAD", es:"CABEZA", img:"👤", cat:"BODY"},
- {en:"KNEE", img:"knee.png", isImage: true, cat:"BODY"},
- {en:"EYES", img:"eyes.png", isImage: true, cat:"BODY"},
- {en:"FEET", img:"feet.png", isImage: true, cat:"BODY"},
- {en:"LEG", es:"PIERNA", img:"🦵", cat:"BODY"},
- {en:"MOUTH", es:"BOCA", img:"👄", cat:"BODY"},
- {en:"NOSE", es:"NARIZ", img:"👃", cat:"BODY"},
- {en:"TOES", img:"toes.png", isImage: true, cat:"BODY"},
- {en:"BABY", es:"BEBÉ", img:"👶", cat:"FAMILY"},
- {en:"BROTHER", es:"HERMANO", img:"👦", cat:"FAMILY"},
- {en:"DAD", es:"PAPÁ", img:"👨", cat:"FAMILY"},
- {en:"MUM", es:"MAMÁ", img:"👩", cat:"FAMILY"},
- {en:"SISTER", es:"HERMANA", img:"👧", cat:"FAMILY"},
- {en:"GRANNY", es:"ABUELA", img:"👵", cat:"FAMILY"},
- {en:"GRANDAD", es:"ABUELO", img:"👴", cat:"FAMILY"},
- {en:"BIN", es:"PAPELERA", img:"🗑️", cat:"SCHOOL"},
- {en:"BOOK", es:"LIBRO", img:"📖", cat:"SCHOOL"},
- {en:"CHAIR", es:"SILLA", img:"🪑", cat:"SCHOOL"},
- {en:"CRAYON", es:"CERA", img:"🖍️", cat:"SCHOOL"},
- {en:"GLUE", img:"glue.png", isImage: true, cat:"SCHOOL"},
- {en:"PEN", es:"BOLÍGRAFO", img:"🖊️", cat:"SCHOOL"},
- {en:"PENCIL", es:"LÁPIZ", img:"✏️", cat:"SCHOOL"},
- {en:"PENCIL CASE", img:"pencil case.png", isImage: true, cat:"SCHOOL"},
- {en:"RUBBER", img:"rubber.png", isImage: true, cat:"SCHOOL"},
- {en:"RULER", es:"REGLA", img:"📏", cat:"SCHOOL"},
- {en:"SCHOOL BAG", es:"MOCHILA", img:"🎒", cat:"SCHOOL"},
- {en:"SHARPENER", img:"sharpener.png", isImage: true, cat:"SCHOOL"},
- {en:"CAT", es:"GATO", img:"🐱", cat:"ANIMALS"},
- {en:"DOG", es:"PERRO", img:"🐶", cat:"ANIMALS"},
- {en:"MOUSE", es:"RATÓN", img:"🐭", cat:"ANIMALS"},
- {en:"PARROT", es:"LORO", img:"🦜", cat:"ANIMALS"},
- {en:"RABBIT", es:"CONEJO", img:"🐰", cat:"ANIMALS"},
- {en:"SNAKE", es:"SERPIENTE", img:"🐍", cat:"ANIMALS"},
- {en:"SPIDER", es:"ARAÑA", img:"🕷️", cat:"ANIMALS"},
- {en:"FISH", es:"PEZ", img:"🐠", cat:"ANIMALS"},
- {en:"MONKEY", es:"MONO", img:"🐒", cat:"ANIMALS"},
- {en:"HORSE", es:"CABALLO", img:"🐎", cat:"ANIMALS"},
- {en:"BALL", es:"PELOTA", img:"⚽", cat:"TOYS"},
- {en:"CAR", es:"COCHE", img:"🚗", cat:"TOYS"},
- {en:"DOLL", es:"MUÑECA", img:"🪆", cat:"TOYS"},
- {en:"PLANE", es:"AVIÓN", img:"✈️", cat:"TOYS"},
- {en:"ROBOT", es:"ROBOT", img:"🤖", cat:"TOYS"},
- {en:"SCOOTER", es:"PATINETE", img:"🛴", cat:"TOYS"},
- {en:"TEDDY", es:"OSO DE PELUCHE", img:"🧸", cat:"TOYS"},
- {en:"GAME CONSOLE", es:"CONSOLA", img:"🎮", cat:"TOYS"},
- {en:"TRAIN", es:"TREN", img:"🚂", cat:"TOYS"},
- {en:"DINOSAUR", es:"DINOSAURIO", img:"🦖", cat:"TOYS"},
- {en:"KITE", es:"COMETA", img:"🪁", cat:"TOYS"},
- {en:"BIG", img:"big.png", isImage: true, cat:"TOYS"},
- {en:"SMALL", img:"small.png", isImage: true, cat:"TOYS"},
- {en:"BORED", es:"ABURRIDO", img:"😪", cat:"FEELINGS"},
- {en:"HAPPY", es:"FELIZ", img:"😊", cat:"FEELINGS"},
- {en:"HUNGRY", es:"HAMBRIENTO", img:"🤤", cat:"FEELINGS"},
- {en:"SAD", es:"TRISTE", img:"😢", cat:"FEELINGS"},
- {en:"SCARED", es:"ASUSTADO", img:"😨", cat:"FEELINGS"},
- {en:"BLUE", es:"AZUL", img:"🔵", cat:"COLOURS"},
- {en:"PINK", es:"ROSA", img:"🌸", cat:"COLOURS"},
- {en:"PURPLE", es:"MORADO", img:"💜", cat:"COLOURS"},
- {en:"YELLOW", es:"AMARILLO", img:"💛", cat:"COLOURS"},
- {en:"RED", es:"ROJO", img:"🔴", cat:"COLOURS"},
- {en:"GREEN", es:"VERDE", img:"🟢", cat:"COLOURS"},
- {en:"BLACK", es:"NEGRO", img:"⚫", cat:"COLOURS"},
- {en:"WHITE", es:"BLANCO", img:"⚪", cat:"COLOURS"},
- {en:"BROWN", es:"MARRÓN", img:"🟤", cat:"COLOURS"},
- {en:"GREY", es:"GRIS", img:"🩶", cat:"COLOURS"},
- {en:"ORANGE", es:"NARANJA", img:"🟠", cat:"COLOURS"},
- {en:"ONE", es:"UNO", img:"1️⃣", cat:"NUMBERS"},
- {en:"TWO", es:"DOS", img:"2️⃣", cat:"NUMBERS"},
- {en:"THREE", es:"TRES", img:"3️⃣", cat:"NUMBERS"},
- {en:"FOUR", es:"CUATRO", img:"4️⃣", cat:"NUMBERS"},
- {en:"FIVE", es:"CINCO", img:"5️⃣", cat:"NUMBERS"},
- {en:"SIX", es:"SEIS", img:"6️⃣", cat:"NUMBERS"},
- {en:"SEVEN", es:"SIETE", img:"7️⃣", cat:"NUMBERS"},
- {en:"EIGHT", es:"OCHO", img:"8️⃣", cat:"NUMBERS"},
- {en:"NINE", es:"NUEVE", img:"9️⃣", cat:"NUMBERS"},
- {en:"TEN", es:"DIEZ", img:"🔟", cat:"NUMBERS"},
+    {en:"APPLE", img:"🍎", cat:"FOOD"}, {en:"BANANA", img:"🍌", cat:"FOOD"}, {en:"CAKE", img:"🍰", cat:"FOOD"},
+    {en:"CHEESE", img:"🧀", cat:"FOOD"}, {en:"CHICKEN", img:"🍗", cat:"FOOD"}, {en:"JUICE", img:"🧃", cat:"FOOD"},
+    {en:"MEAT", img:"🥩", cat:"FOOD"}, {en:"MILK", img:"🥛", cat:"FOOD"}, {en:"ORANGE", img:"🍊", cat:"FOOD"},
+    {en:"PEAR", img:"🍐", cat:"FOOD"}, {en:"SALAD", img:"🥗", cat:"FOOD"}, {en:"SOUP", img:"🍲", cat:"FOOD"},
+    {en:"WATER", img:"💧", cat:"FOOD"}, {en:"YOGURT", img:"yogurt.png", isImage: true, cat:"FOOD"},
+    {en:"ARM", img:"💪", cat:"BODY"}, {en:"HAIR", img:"💇", cat:"BODY"}, {en:"HAND", img:"🖐️", cat:"BODY"},
+    {en:"HEAD", img:"👤", cat:"BODY"}, {en:"KNEE", img:"knee.png", isImage: true, cat:"BODY"},
+    {en:"EYES", img:"eyes.png", isImage: true, cat:"BODY"}, {en:"FEET", img:"feet.png", isImage: true, cat:"BODY"},
+    {en:"LEG", img:"🦵", cat:"BODY"}, {en:"MOUTH", img:"👄", cat:"BODY"}, {en:"NOSE", img:"👃", cat:"BODY"},
+    {en:"TOES", img:"toes.png", isImage: true, cat:"BODY"},
+    {en:"BABY", img:"👶", cat:"FAMILY"}, {en:"BROTHER", img:"👦", cat:"FAMILY"}, {en:"DAD", img:"👨", cat:"FAMILY"},
+    {en:"MUM", img:"👩", cat:"FAMILY"}, {en:"SISTER", img:"👧", cat:"FAMILY"}, {en:"GRANNY", img:"👵", cat:"FAMILY"},
+    {en:"GRANDAD", img:"👴", cat:"FAMILY"},
+    {en:"BIN", img:"🗑️", cat:"SCHOOL"}, {en:"BOOK", img:"📖", cat:"SCHOOL"}, {en:"CHAIR", img:"🪑", cat:"SCHOOL"},
+    {en:"CRAYON", img:"🖍️", cat:"SCHOOL"}, {en:"GLUE", img:"glue.png", isImage: true, cat:"SCHOOL"},
+    {en:"PEN", img:"🖊️", cat:"SCHOOL"}, {en:"PENCIL", img:"✏️", cat:"SCHOOL"},
+    {en:"PENCIL CASE", img:"pencil case.png", isImage: true, cat:"SCHOOL"},
+    {en:"RUBBER", img:"rubber.png", isImage: true, cat:"SCHOOL"}, {en:"RULER", img:"📏", cat:"SCHOOL"},
+    {en:"SCHOOL BAG", img:"🎒", cat:"SCHOOL"}, {en:"SHARPENER", img:"sharpener.png", isImage: true, cat:"SCHOOL"},
+    {en:"CAT", img:"🐱", cat:"ANIMALS"}, {en:"DOG", img:"🐶", cat:"ANIMALS"}, {en:"MOUSE", img:"🐭", cat:"ANIMALS"},
+    {en:"PARROT", img:"🦜", cat:"ANIMALS"}, {en:"RABBIT", img:"🐰", cat:"ANIMALS"}, {en:"SNAKE", img:"🐍", cat:"ANIMALS"},
+    {en:"SPIDER", img:"🕷️", cat:"ANIMALS"}, {en:"FISH", img:"🐠", cat:"ANIMALS"}, {en:"MONKEY", img:"🐒", cat:"ANIMALS"},
+    {en:"HORSE", img:"🐎", cat:"ANIMALS"},
+    {en:"BALL", img:"⚽", cat:"TOYS"}, {en:"CAR", img:"🚗", cat:"TOYS"}, {en:"DOLL", img:"🪆", cat:"TOYS"},
+    {en:"PLANE", img:"✈️", cat:"TOYS"}, {en:"ROBOT", img:"🤖", cat:"TOYS"}, {en:"SCOOTER", img:"🛴", cat:"TOYS"},
+    {en:"TEDDY", img:"🧸", cat:"TOYS"}, {en:"GAME CONSOLE", img:"🎮", cat:"TOYS"}, {en:"TRAIN", img:"🚂", cat:"TOYS"},
+    {en:"DINOSAUR", img:"🦖", cat:"TOYS"}, {en:"KITE", img:"🪁", cat:"TOYS"},
+    {en:"BIG", img:"big.png", isImage: true, cat:"TOYS"}, {en:"SMALL", img:"small.png", isImage: true, cat:"TOYS"},
+    {en:"BORED", img:"😪", cat:"FEELINGS"}, {en:"HAPPY", img:"😊", cat:"FEELINGS"}, {en:"HUNGRY", img:"🤤", cat:"FEELINGS"},
+    {en:"SAD", img:"😢", cat:"FEELINGS"}, {en:"SCARED", img:"😨", cat:"FEELINGS"},
+    {en:"BLUE", img:"🔵", cat:"COLOURS"}, {en:"PINK", img:"🌸", cat:"COLOURS"}, {en:"PURPLE", img:"💜", cat:"COLOURS"},
+    {en:"YELLOW", img:"💛", cat:"COLOURS"}, {en:"RED", img:"🔴", cat:"COLOURS"}, {en:"GREEN", img:"🟢", cat:"COLOURS"},
+    {en:"BLACK", img:"⚫", cat:"COLOURS"}, {en:"WHITE", img:"⚪", cat:"COLOURS"}, {en:"BROWN", img:"🟤", cat:"COLOURS"},
+    {en:"GREY", img:"🩶", cat:"COLOURS"}, {en:"ORANGE", img:"🟠", cat:"COLOURS"},
+    {en:"ONE", img:"1️⃣", cat:"NUMBERS"}, {en:"TWO", img:"2️⃣", cat:"NUMBERS"}, {en:"THREE", img:"3️⃣", cat:"NUMBERS"},
+    {en:"FOUR", img:"4️⃣", cat:"NUMBERS"}, {en:"FIVE", img:"5️⃣", cat:"NUMBERS"}, {en:"SIX", img:"6️⃣", cat:"NUMBERS"},
+    {en:"SEVEN", img:"7️⃣", cat:"NUMBERS"}, {en:"EIGHT", img:"8️⃣", cat:"NUMBERS"}, {en:"NINE", img:"9️⃣", cat:"NUMBERS"},
+    {en:"TEN", img:"🔟", cat:"NUMBERS"}
 ];
 
-let currentList = [], currentIndex = 0, isFlipped = false;
+let currentList = [], currentIndex = 0, isFlipped = false, errorList = [];
+let gameMode = 'IMG-EN', isExamMode = false;
+let seconds = 0, timerInterval = null, correct = 0, wrong = 0, currentStreak = 0;
+
 const ui = {
     card: document.getElementById("flashcard"),
-    img: document.getElementById("cardImg"),
-    word: document.getElementById("cardWord"),
+    imgFront: document.getElementById("imgFront"),
+    textFront: document.getElementById("textFront"),
+    imgBack: document.getElementById("imgBack"),
+    textBack: document.getElementById("textBack"),
+    faceFront: document.getElementById("faceFront"),
+    faceBack: document.getElementById("faceBack"),
     counter: document.getElementById("counterDisplay"),
-    prevBtn: document.getElementById("prevBtn"),
-    nextBtn: document.getElementById("nextBtn"),
-    multiPanel: document.getElementById("multiSelectContainer")
+    progressBar: document.getElementById("progressBar"),
+    examBar: document.getElementById("examBar"),
+    timer: document.getElementById("timer"),
+    scoreCorrect: document.getElementById("scoreCorrect"),
+    scoreWrong: document.getElementById("scoreWrong"),
+    streak: document.getElementById("streak"),
+    examActions: document.getElementById("examActions"),
+    mixPanel: document.getElementById("mixPanel"),
+    mixCheckboxes: document.getElementById("mixCheckboxes"),
+    catSelect: document.getElementById("categorySelect")
 };
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+const categoryOrder = [
+    { name: "COLOURS", emoji: "🎨" }, { name: "NUMBERS", emoji: "🔢" },
+    { name: "FAMILY", emoji: "👨‍👩‍👧" }, { name: "FEELINGS", emoji: "❤️" },
+    { name: "SCHOOL", emoji: "🎒" }, { name: "ANIMALS", emoji: "🐶" },
+    { name: "TOYS", emoji: "⚽" }, { name: "BODY", emoji: "💪" },
+    { name: "FOOD", emoji: "🍎" }
+];
+
+let audioCtx = null;
+function playBeep(freq, dur) {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine"; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + dur);
 }
 
-function toggleMultiSelect() {
-    const cat = document.getElementById("categorySelect").value;
-    ui.multiPanel.style.display = (cat === "MIX_TOPICS") ? "grid" : "none";
-    if (cat !== "MIX_TOPICS") changeCategory();
+function initCategories() {
+    categoryOrder.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat.name; opt.textContent = `${cat.emoji} ${cat.name}`;
+        ui.catSelect.appendChild(opt);
+        const cb = `<div style="margin:5px 0;"><input type="checkbox" value="${cat.name}" id="cb_${cat.name}"> <label for="cb_${cat.name}">${cat.emoji} ${cat.name}</label></div>`;
+        ui.mixCheckboxes.innerHTML += cb;
+    });
 }
 
-function applyAndClose() {
+function setMode(mode) {
+    gameMode = mode;
+    document.getElementById("btnImgEn").classList.toggle("active", mode === 'IMG-EN');
+    document.getElementById("btnEnImg").classList.toggle("active", mode === 'EN-IMG');
+    resetCardFace(); updateUI();
+}
+
+function toggleExamMode() {
+    isExamMode = !isExamMode;
+    document.getElementById("btnExam").classList.toggle("active", isExamMode);
+    ui.examBar.style.display = isExamMode ? "flex" : "none";
+    ui.examActions.style.display = isExamMode ? "flex" : "none";
+    if(isExamMode) startExam(); else resetExam();
+}
+
+function startExam() {
+    resetExam();
+    timerInterval = setInterval(() => {
+        seconds++;
+        ui.timer.textContent = `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
+    }, 1000);
     changeCategory();
-    ui.multiPanel.style.display = "none";
+}
+
+function resetExam() {
+    clearInterval(timerInterval);
+    seconds = 0; correct = 0; wrong = 0; currentStreak = 0; errorList = [];
+    ui.scoreCorrect.textContent = "0"; ui.scoreWrong.textContent = "0"; ui.streak.textContent = "0";
+}
+
+function markResult(isCorrect) {
+    if(isCorrect) { correct++; currentStreak++; playBeep(880, 0.1); }
+    else { wrong++; currentStreak = 0; errorList.push(currentList[currentIndex]); playBeep(220, 0.3); }
+    ui.scoreCorrect.textContent = correct; ui.scoreWrong.textContent = wrong; ui.streak.textContent = currentStreak;
+    if(currentIndex === currentList.length - 1) finishExam(); else nextCard();
+}
+
+function finishExam() {
+    clearInterval(timerInterval);
+    if(errorList.length > 0 && confirm("Finish! Review mistakes?")) {
+        currentList = [...errorList]; currentIndex = 0; errorList = []; resetCardFace(); updateUI();
+    } else toggleExamMode();
+}
+
+function handleCategoryChange() {
+    ui.mixPanel.style.display = (ui.catSelect.value === "MIXED") ? "block" : "none";
+    if(ui.catSelect.value !== "MIXED") changeCategory();
 }
 
 function changeCategory() {
-    const cat = document.getElementById("categorySelect").value;
-    let tempList = [];
-
-    if (cat === "ALL") {
-        tempList = [...vocab];
-    } else if (cat === "MIX_TOPICS") {
-        const checkedValues = Array.from(ui.multiPanel.querySelectorAll('input:checked')).map(cb => cb.value);
-        tempList = vocab.filter(item => checkedValues.includes(item.cat));
-    } else {
-        tempList = vocab.filter(item => item.cat === cat);
-    }
-
-    if (tempList.length === 0) {
-        alert("Please select at least one topic!");
-        return;
-    }
+    const val = ui.catSelect.value;
+    let selectedCats = [];
+    if(val === "ALL") selectedCats = categoryOrder.map(c => c.name);
+    else if (val === "MIXED") {
+        selectedCats = Array.from(ui.mixCheckboxes.querySelectorAll('input:checked')).map(cb => cb.value);
+        if(!selectedCats.length) return alert("Pick at least one category!");
+        ui.mixPanel.style.display = "none";
+    } else selectedCats = [val];
     
-    currentList = shuffleArray(tempList);
-    currentIndex = 0;
-    resetCardFace();
-    updateUI();
+    currentList = vocab.filter(v => selectedCats.includes(v.cat)).sort(() => Math.random() - 0.5);
+    currentIndex = 0; resetCardFace(); updateUI();
 }
 
 function updateUI() {
-    if(currentList.length === 0) return;
+    if(!currentList.length) return;
     const item = currentList[currentIndex];
-    if (item.isImage) {
-        ui.img.innerHTML = `<img src="${item.img}" alt="${item.en}">`;
-    } else {
-        ui.img.innerHTML = item.img;
-    }
+    ui.imgFront.innerHTML = ""; ui.textFront.textContent = "";
+    ui.imgBack.innerHTML = ""; ui.textBack.textContent = "";
 
-    ui.word.textContent = item.en;
+    if(gameMode === 'IMG-EN') {
+        ui.faceFront.className = 'card-face front face-img';
+        renderContent(ui.imgFront, item);
+        ui.faceBack.className = 'card-face back face-word';
+        ui.textBack.textContent = item.en;
+    } else {
+        ui.faceFront.className = 'card-face front face-word';
+        ui.textFront.textContent = item.en;
+        ui.faceBack.className = 'card-face back face-img';
+        renderContent(ui.imgBack, item);
+    }
     ui.counter.textContent = `${currentIndex + 1} / ${currentList.length}`;
-    ui.prevBtn.disabled = (currentIndex === 0);
-    ui.nextBtn.disabled = (currentIndex === currentList.length - 1);
+    ui.progressBar.style.width = `${((currentIndex + 1) / currentList.length) * 100}%`;
+}
+
+function renderContent(container, item) {
+    if(item.isImage) container.innerHTML = `<img src="${item.img}">`;
+    else container.textContent = item.img;
 }
 
 function flipCard() {
@@ -415,35 +371,18 @@ function flipCard() {
     if(isFlipped) setTimeout(playCurrentAudio, 200);
 }
 
-function resetCardFace() { 
-    isFlipped = false;
-    ui.card.classList.remove("is-flipped"); 
-}
-
-function nextCard() { 
-    if(currentIndex < currentList.length - 1) { 
-        currentIndex++; 
-        resetCardFace(); 
-        setTimeout(updateUI, 150);
-    } 
-}
-
-function prevCard() { 
-    if(currentIndex > 0) { 
-        currentIndex--; 
-        resetCardFace(); 
-        setTimeout(updateUI, 150); 
-    } 
-}
-
 function playCurrentAudio() {
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(currentList[currentIndex].en);
-    utterance.lang = "en-GB"; 
-    utterance.rate = 0.9;
-    window.speechSynthesis.speak(utterance);
+    const msg = new SpeechSynthesisUtterance(currentList[currentIndex].en);
+    msg.lang = "en-GB"; msg.rate = 0.9;
+    window.speechSynthesis.speak(msg);
 }
 
+function resetCardFace() { isFlipped = false; ui.card.classList.remove("is-flipped"); }
+function nextCard() { if(currentIndex < currentList.length - 1) { currentIndex++; resetCardFace(); setTimeout(updateUI, 150); } }
+function prevCard() { if(currentIndex > 0) { currentIndex--; resetCardFace(); setTimeout(updateUI, 150); } }
+
+initCategories();
 changeCategory();
 </script>
 </body>
