@@ -41,7 +41,6 @@ header {
     white-space: nowrap;
 }
 
-/* Modificación: Iconos del Header circulares y blancos */
 header img { 
     width: 30px; 
     height: 30px; 
@@ -67,7 +66,6 @@ header img {
     transition: all 0.3s; font-size: 0.75rem;
 }
 
-/* Modificación: Iconos de los botones de modo circulares y blancos */
 .mode-btn img { 
     width: 22px; 
     height: 22px; 
@@ -103,7 +101,14 @@ select {
     justify-content: center; padding: 25px; box-sizing: border-box; border: 8px solid #fff;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
 }
-.face-img { background: #ffffff; } 
+
+/* Modificación: Borde de 4px, color morado claro y sombra suave profesional */
+.face-img { 
+    background: #ffffff; 
+    border: 4px solid #b388ff !important; 
+    box-shadow: 0 10px 25px rgba(179, 136, 255, 0.3) !important; 
+} 
+
 .face-word { background: var(--primary); color: white; }
 .card-face.back { transform: rotateY(180deg); }
 
@@ -180,7 +185,6 @@ select {
 </div>
 
 <script>
-/* Vocabulario y Lógica se mantienen igual */
 const vocab = [
     {en:"APPLE", img:"🍎", cat:"FOOD"}, {en:"BANANA", img:"🍌", cat:"FOOD"}, {en:"CAKE", img:"🍰", cat:"FOOD"},
     {en:"CHEESE", img:"🧀", cat:"FOOD"}, {en:"CHICKEN", img:"🍗", cat:"FOOD"}, {en:"JUICE", img:"🧃", cat:"FOOD"},
@@ -386,5 +390,4 @@ initCategories();
 changeCategory();
 </script>
 </body>
-
 </html>
